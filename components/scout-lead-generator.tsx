@@ -403,7 +403,7 @@ const updateStep = (newStep: number) => {
             </Card>
             <div className="space-y-4">
               <a
-                href="https://scaleagentic.ai/"
+                href="https://calendly.com/scaleagentic/agent-scout"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg active:scale-95"
