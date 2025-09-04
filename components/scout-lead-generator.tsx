@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -179,7 +180,9 @@ const updateStep = (newStep: number) => {
       {step === 1 && (
         <div className="relative min-h-screen flex flex-col bg-white">
           <div className="absolute top-10 left-10">
+          <Link href="https://scaleagentic.ai" target="_blank" rel="noopener noreferrer">
             <Image src="/ScaleAgentic Logo (1).png" alt="ScaleAgentic Logo" width={180} height={50} priority />
+            </Link>  
           </div>
           <div className="flex-1 max-w-5xl mx-auto px-6 py-32 text-center space-y-8">
             <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
