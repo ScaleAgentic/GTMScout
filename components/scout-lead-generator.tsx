@@ -332,21 +332,22 @@ const updateStep = (newStep: number) => {
           <ProgressDots currentStep={5} />
           <div className="text-center space-y-4 mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Get your personalized GTM opportunities</h2>
-            <p className="text-lg text-gray-600">Scout has {formData.campaigns.length} campaign strategies ready for you</p>
+            <p className="text-lg text-gray-600">Scout has {formData.campaigns.length} campaign previews ready for you</p>
           </div>
           <Card className="max-w-md mx-auto">
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Input type="email" placeholder="Work email *" value={formData.email} onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))} required className="h-12" />
-                <Input type="text" placeholder="First name *" value={formData.firstName} onChange={(e) => setFormData((prev) => ({ ...prev, firstName: e.target.value }))} required className="h-12" />
-                <Input type="text" placeholder="Company name" value={formData.company} onChange={(e) => setFormData((prev) => ({ ...prev, company: e.target.value }))} className="h-12" />
-                <select value={formData.teamSize} onChange={(e) => setFormData((prev) => ({ ...prev, teamSize: e.target.value }))} className="w-full h-12 px-3 border rounded-md">
-                  <option value="">Team size (optional)</option>
-                  <option value="1-5">1-5 people</option>
-                  <option value="6-20">6-20 people</option>
-                  <option value="21-50">21-50 people</option>
-                  <option value="51-200">51-200 people</option>
-                  <option value="200+">200+ people</option>
+                <Input type="text" placeholder="Your name *" value={formData.firstName} onChange={(e) => setFormData((prev) => ({ ...prev, firstName: e.target.value }))} required className="h-12" />
+                <Input type="text" placeholder="Company name *" value={formData.company} onChange={(e) => setFormData((prev) => ({ ...prev, company: e.target.value }))} required className="h-12" />
+                <select value={formData.teamSize} onChange={(e) => setFormData((prev) => ({ ...prev, teamSize: e.target.value }))} required className="w-full h-12 px-3 border rounded-md">
+                  <option value="">Company Size *</option>
+                  <option value="1-5">1-5</option>
+                  <option value="6-20">6-50</option>
+                  <option value="21-50">51-200</option>
+                  <option value="51-200">201-500</option>
+                  <option value="200+">501-1000</option>
+                  <option value="1000+">1000+</option>
                 </select>
                 <Button type="submit" disabled={isLoading} className="group w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95">
                   {isLoading ? "Activating Scout..." : (
