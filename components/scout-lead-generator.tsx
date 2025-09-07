@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import Link from "next/link";
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
 import { createClient } from "@supabase/supabase-js"
 
 import {
@@ -22,13 +23,23 @@ import {
   Eye,
   Settings,
   CheckCircle,
+  BarChart3,
 } from "lucide-react"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-type Challenge = "prospects" | "personalization" | "competitors" | "pipeline" | "events" | "other"
+type Challenge =
+  | "prospects"
+  | "personalization"
+  | "competitors"
+  | "pipeline"
+  | "velocity"
+  | "attribution"
+  | "events"
+  | "other"
+
 type Campaign =
   | "engagement"
   | "icp"
@@ -47,6 +58,8 @@ interface FormData {
   firstName: string
   company: string
   teamSize: string
+  challengeCustom?: string
+  campaignCustom?: string
 }
 
 const challenges = [
@@ -54,8 +67,8 @@ const challenges = [
   { id: "personalization" as Challenge, title: "Breaking through the noise with personalization", icon: Sparkles },
   { id: "competitors" as Challenge, title: "Tracking what competitors are doing", icon: Eye },
   { id: "pipeline" as Challenge, title: "Building pipeline from multiple channels", icon: TrendingUp },
-  { id: "events" as Challenge, title: "Maximizing event and launch impact", icon: Zap },
-  { id: "other" as Challenge, title: "Other challenge", icon: Settings },
+  { id: "velocity" as Challenge, title: "Accelerating deal velocity and shortening sales cycles", icon: Zap },
+  { id: "attribution" as Challenge, title: "Track and measure ROI across channels", icon: BarChart3 },
 ]
 
 const campaigns = [
@@ -67,12 +80,12 @@ const campaigns = [
   { id: "search" as Campaign, title: "AI Search Optimization", description: "Win in AI-native search (GEO/AEO)", icon: Search },
   { id: "content" as Campaign, title: "Content Campaign", description: "Generate and distribute thought leadership", icon: PenTool },
   { id: "intelligence" as Campaign, title: "Market Intelligence", description: "Track competitors and sentiment shifts", icon: Eye },
-  { id: "custom" as Campaign, title: "Custom Motion", description: "Design your own GTM motion", icon: Settings },
+  { id: "custom" as Campaign, title: "Custom Motion", description: "Let Scout design your custom GTM motion", icon: Sparkles },
 ]
 
 // Progress Dots
 function ProgressDots({ currentStep }: { currentStep: number }) {
-  const steps = [1, 2, 3, 5, 6] // removed step 4
+  const steps = [1, 2, 3, 5, 6]
   return (
     <div className="flex justify-center space-x-2 mb-8">
       {steps.map((s) => (
@@ -91,24 +104,24 @@ export default function ScoutLeadGenerator() {
   const router = useRouter()
   const [step, setStep] = useState(1)
 
-useEffect(() => {
-  const handlePopState = () => {
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      const currentStep = Number(params.get("step")) || 1
+      setStep(currentStep)
+    }
+
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [])
+
+  // Update URL when step changes
+  const updateStep = (newStep: number) => {
+    setStep(newStep)
     const params = new URLSearchParams(window.location.search)
-    const currentStep = Number(params.get("step")) || 1
-    setStep(currentStep)
+    params.set("step", String(newStep))
+    window.history.pushState({}, "", `?${params.toString()}`)
   }
-
-  window.addEventListener("popstate", handlePopState)
-  return () => window.removeEventListener("popstate", handlePopState)
-}, [])
-
-// Update URL when step changes
-const updateStep = (newStep: number) => {
-  setStep(newStep)
-  const params = new URLSearchParams(window.location.search)
-  params.set("step", String(newStep))
-  window.history.pushState({}, "", `?${params.toString()}`)
-}
 
   const [formData, setFormData] = useState<FormData>({
     challenges: [],
@@ -117,6 +130,7 @@ const updateStep = (newStep: number) => {
     firstName: "",
     company: "",
     teamSize: "",
+    challengeCustom: "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [opportunityCount, setOpportunityCount] = useState(47)
@@ -159,6 +173,7 @@ const updateStep = (newStep: number) => {
         team_size: formData.teamSize,
         challenges: formData.challenges,
         campaigns: formData.campaigns,
+        challenge_custom: formData.challengeCustom,
       },
     ])
 
@@ -180,9 +195,9 @@ const updateStep = (newStep: number) => {
       {step === 1 && (
         <div className="relative min-h-screen flex flex-col bg-white">
           <div className="absolute top-10 left-10">
-          <Link href="https://scaleagentic.ai" target="_blank" rel="noopener noreferrer">
-            <Image src="/ScaleAgentic Logo (1).png" alt="ScaleAgentic Logo" width={180} height={50} priority />
-            </Link>  
+            <Link href="https://scaleagentic.ai" target="_blank" rel="noopener noreferrer">
+              <Image src="/ScaleAgentic Logo (1).png" alt="ScaleAgentic Logo" width={180} height={50} priority />
+            </Link>
           </div>
           <div className="flex-1 max-w-5xl mx-auto px-6 py-32 text-center space-y-8">
             <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
@@ -214,117 +229,216 @@ const updateStep = (newStep: number) => {
         </div>
       )}
 
-      {/* Step 2 */}
-      {step === 2 && (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-gradient-to-b from-gray-50 via-white to-gray-50">
-          <ProgressDots currentStep={2} />
-          <div className="text-center space-y-4 mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">What's your biggest GTM challenge right now?</h2>
-            <p className="text-lg text-gray-600">Help Scout understand what to focus on for you</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {challenges.map((challenge) => {
-              const Icon = challenge.icon
-              const isSelected = formData.challenges.includes(challenge.id)
-              return (
-                <Card
-                  key={challenge.id}
-                  className={`cursor-pointer transition-all duration-300 ${
-                    isSelected ? "border-blue-500 bg-blue-50 shadow-md" : "hover:border-blue-300"
-                  }`}
-                  onClick={() => handleChallengeToggle(challenge.id)}
-                >
-                  <CardContent className="p-6 flex items-center space-x-4">
-                    <div className="p-3 bg-blue-100 rounded-lg">
-                      <Icon className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <p className="font-medium text-gray-900">{challenge.title}</p>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-          {formData.challenges.length > 0 && (
-            <div className="mt-8">
-              <Button
-                onClick={() => updateStep(3)}
-                size="lg"
-                className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
-              >
-                Next
-                <ChevronRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-2" />
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+{/* Step 2 */}
+{step === 2 && (
+  <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <ProgressDots currentStep={2} />
 
-      {/* Step 3 */}
-      {step === 3 && (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-gradient-to-b from-gray-50 via-white to-gray-50">
-          <ProgressDots currentStep={3} />
-          <div className="text-center space-y-4 mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Scout can run these campaigns for you</h2>
-            <p className="text-lg text-gray-600">Pick what excites you most (select multiple)</p>
-          </div>
-          {formData.campaigns.length > 0 && (
-            <div className="max-w-md mx-auto mb-8">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">Campaign Power</span>
-                <span className="text-sm text-blue-600">{formData.campaigns.length}/9</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full"
-                  style={{ width: `${powerMeterWidth}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
-          <div className="grid md:grid-cols-3 gap-6">
-            {campaigns.map((campaign) => {
-              const Icon = campaign.icon
-              const isSelected = formData.campaigns.includes(campaign.id)
-              return (
-                <Card
-                  key={campaign.id}
-                  className={`cursor-pointer transition-all duration-300 ${
-                    isSelected ? "border-blue-500 bg-blue-50 shadow-md" : "hover:border-blue-300"
-                  }`}
-                  onClick={() => handleCampaignToggle(campaign.id)}
-                >
-                  <CardContent className="p-6 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-lg ${isSelected ? "bg-blue-200" : "bg-gray-100"}`}>
-                        <Icon className={`w-5 h-5 ${isSelected ? "text-blue-700" : "text-gray-600"}`} />
-                      </div>
-                      {isSelected && <CheckCircle className="w-5 h-5 text-blue-600" />}
-                    </div>
-                    <div>
-                      <h3 className={`font-semibold ${isSelected ? "text-blue-900" : "text-gray-900"}`}>
-                        {campaign.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">{campaign.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-          {formData.campaigns.length > 0 && (
-            <div className="mt-8">
-              <Button
-                onClick={() => updateStep(5)}
-                size="lg"
-                className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
+    {/* Heading */}
+    <div className="text-center space-y-4 mb-8">
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        What's your biggest GTM challenge right now?
+      </h2>
+      <p className="text-lg text-gray-600">
+        Help Scout understand what to focus on for you
+      </p>
+    </div>
+
+    {/* Challenge cards */}
+    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
+      {challenges.map((challenge) => {
+        const Icon = challenge.icon
+        const isSelected = formData.challenges.includes(challenge.id)
+        return (
+          <Card
+            key={challenge.id}
+            className={`cursor-pointer transition-all duration-300 ${
+              isSelected
+                ? "border-blue-500 bg-blue-50 shadow-md"
+                : "hover:border-blue-300"
+            }`}
+            onClick={() => handleChallengeToggle(challenge.id)}
+          >
+            <CardContent className="p-6 flex items-center space-x-4">
+              <div
+                className={`p-3 rounded-lg ${
+                  isSelected ? "bg-blue-200" : "bg-blue-100"
+                }`}
               >
-                Generate My GTM Preview
-                <Sparkles className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-2" />
-              </Button>
-            </div>
-          )}
+                <Icon
+                  className={`w-6 h-6 ${
+                    isSelected ? "text-blue-700" : "text-blue-600"
+                  }`}
+                />
+              </div>
+              <p
+                className={`font-medium ${
+                  isSelected ? "text-blue-900" : "text-gray-900"
+                }`}
+              >
+                {challenge.title}
+              </p>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </div>
+
+    {/* Custom challenge textarea */}
+    <div className="max-w-2xl mx-auto space-y-4">
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Or describe your biggest GTM challenge and goals in your own
+              words:
+            </label>
+            <Textarea
+              placeholder="Tell us about your specific GTM challenges, goals, and what you're trying to achieve..."
+              value={formData.challengeCustom || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  challengeCustom: e.target.value,
+                }))
+              }
+              className="min-h-[100px]"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="text-center">
+        <Button
+          onClick={() => updateStep(3)}
+          disabled={!formData.challenge && !formData.challengeCustom.trim()}
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl px-8 py-3"
+        >
+          Continue
+          <ChevronRight className="w-5 h-5 ml-2" />
+        </Button>
+      </div>
+     </div>
+    </div>
+  )}
+
+{/* Step 3 */}
+{step === 3 && (
+  <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <ProgressDots currentStep={3} />
+
+    {/* Heading */}
+    <div className="text-center space-y-4 mb-8">
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        Scout can run these campaigns for you
+      </h2>
+      <p className="text-lg text-gray-600">
+        Pick what excites you most (select multiple) or describe your own
+      </p>
+    </div>
+
+    {/* Power meter */}
+    {formData.campaigns.length > 0 && (
+      <div className="max-w-md mx-auto mb-8">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium text-gray-700">
+            Campaign Power
+          </span>
+          <span className="text-sm text-blue-600">
+            {formData.campaigns.length}/9
+          </span>
         </div>
-      )}
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full"
+            style={{ width: `${powerMeterWidth}%` }}
+          />
+        </div>
+      </div>
+    )}
+
+    {/* Campaign cards */}
+    <div className="grid md:grid-cols-3 gap-6 mb-8">
+      {campaigns.map((campaign) => {
+        const Icon = campaign.icon
+        const isSelected = formData.campaigns.includes(campaign.id)
+        return (
+          <Card
+            key={campaign.id}
+            className={`cursor-pointer transition-all duration-300 ${
+              isSelected
+                ? "border-blue-500 bg-blue-50 shadow-md"
+                : "hover:border-blue-300"
+            }`}
+            onClick={() => handleCampaignToggle(campaign.id)}
+          >
+            <CardContent className="p-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <div
+                  className={`p-2 rounded-lg ${
+                    isSelected ? "bg-blue-200" : "bg-gray-100"
+                  }`}
+                >
+                  <Icon
+                    className={`w-5 h-5 ${
+                      isSelected ? "text-blue-700" : "text-gray-600"
+                    }`}
+                  />
+                </div>
+                {isSelected && (
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                )}
+              </div>
+              <div>
+                <h3
+                  className={`font-semibold ${
+                    isSelected ? "text-blue-900" : "text-gray-900"
+                  }`}
+                >
+                  {campaign.title}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {campaign.description}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </div>
+
+    {/* Custom campaign textarea */}
+    <div className="w-full max-w-2xl space-y-2 mb-8">
+      <label className="block font-medium text-gray-700">
+        Or describe your ideal campaign in your own words:
+      </label>
+      <Textarea
+        placeholder="Tell us about the specific campaign you'd like Scout to run for you..."
+        value={formData.campaignCustom || ""}
+        onChange={(e) =>
+          setFormData({ ...formData, campaignCustom: e.target.value })
+        }
+        className="h-28 resize-none"
+      />
+    </div>
+
+    {/* Continue button */}
+    <div className="mt-4">
+      <Button
+        onClick={() => updateStep(5)}
+        disabled={
+          formData.campaigns.length === 0 && !formData.campaignCustom
+        }
+        size="lg"
+        className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
+      >
+        Generate My GTM Preview
+        <Sparkles className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-2" />
+      </Button>
+    </div>
+  </div>
+)}
+
 
       {/* Step 5 */}
       {step === 5 && (
@@ -332,7 +446,7 @@ const updateStep = (newStep: number) => {
           <ProgressDots currentStep={5} />
           <div className="text-center space-y-4 mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Get your personalized GTM opportunities</h2>
-            <p className="text-lg text-gray-600">Scout has {formData.campaigns.length} campaign previews ready for you</p>
+            <p className="text-lg text-gray-600">Scout has {formData.campaigns.length + (formData.campaignCustom ? 1 : 0)} campaign previews ready for you</p>
           </div>
           <Card className="max-w-md mx-auto">
             <CardContent className="p-8">
@@ -343,10 +457,11 @@ const updateStep = (newStep: number) => {
                 <select value={formData.teamSize} onChange={(e) => setFormData((prev) => ({ ...prev, teamSize: e.target.value }))} required className="w-full h-12 px-3 border rounded-md">
                   <option value="">Company Size *</option>
                   <option value="1-5">1-5</option>
-                  <option value="6-20">6-50</option>
-                  <option value="21-50">51-200</option>
-                  <option value="51-200">201-500</option>
-                  <option value="200+">501-1000</option>
+                  <option value="6-20">6-20</option>
+                  <option value="21-50">21-50</option>
+                  <option value="51-200">51-200</option>
+                  <option value="201-500">201-500</option>
+                  <option value="501-1000">501-1000</option>
                   <option value="1000+">1000+</option>
                 </select>
                 <Button type="submit" disabled={isLoading} className="group w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95">
@@ -423,5 +538,4 @@ const updateStep = (newStep: number) => {
     </>
   )
 }
-
 
