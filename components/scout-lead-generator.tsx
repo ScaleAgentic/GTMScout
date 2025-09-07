@@ -245,17 +245,17 @@ export default function ScoutLeadGenerator() {
     </div>
 
     {/* Challenge cards */}
-    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
+    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
       {challenges.map((challenge) => {
         const Icon = challenge.icon
         const isSelected = formData.challenges.includes(challenge.id)
         return (
           <Card
             key={challenge.id}
-            className={`cursor-pointer transition-all duration-300 ${
+            className={`cursor-pointer transition-all duration-300 rounded-xl ${
               isSelected
-                ? "border-blue-500 bg-blue-50 shadow-md"
-                : "hover:border-blue-300"
+                ? "border-2 border-blue-500 bg-blue-50 shadow-[0_0_15px_rgba(59,130,246,0.35)]"
+                : "border border-gray-200 hover:border-blue-300 hover:shadow-[0_0_12px_rgba(59,130,246,0.25)]"
             }`}
             onClick={() => handleChallengeToggle(challenge.id)}
           >
@@ -285,7 +285,7 @@ export default function ScoutLeadGenerator() {
     </div>
 
     {/* Custom challenge textarea */}
-    <div className="max-w-2xl mx-auto space-y-4">
+    <div className="max-w-2xl w-full mx-auto space-y-6">
       <Card>
         <CardContent className="p-6">
           <div className="space-y-4">
@@ -302,25 +302,31 @@ export default function ScoutLeadGenerator() {
                   challengeCustom: e.target.value,
                 }))
               }
-              className="min-h-[100px]"
+              className="!h-28 w-full resize-none"
             />
           </div>
         </CardContent>
       </Card>
 
+      {/* Continue button (always visible, disabled until valid) */}
       <div className="text-center">
         <Button
           onClick={() => updateStep(3)}
-          disabled={formData.challenges.length === 0 && !formData.challengeCustom.trim()}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl px-8 py-3"
+          size="lg"
+          disabled={
+            formData.challenges.length === 0 &&
+            !formData.challengeCustom.trim()
+          }
+          className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Continue
-          <ChevronRight className="w-5 h-5 ml-2" />
+          <ChevronRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-2" />
         </Button>
       </div>
-     </div>
     </div>
-  )}
+  </div>
+)}
+
 
 {/* Step 3 */}
 {step === 3 && (
