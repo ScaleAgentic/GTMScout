@@ -311,7 +311,7 @@ export default function ScoutLeadGenerator() {
       <div className="text-center">
         <Button
           onClick={() => updateStep(3)}
-          disabled={!formData.challenge && !formData.challengeCustom.trim()}
+          disabled={formData.challenges.length === 0 && !formData.challengeCustom.trim()}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl px-8 py-3"
         >
           Continue
