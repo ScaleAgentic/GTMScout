@@ -131,6 +131,7 @@ export default function ScoutLeadGenerator() {
     company: "",
     teamSize: "",
     challengeCustom: "",
+    campaignCustom: "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [opportunityCount, setOpportunityCount] = useState(47)
@@ -174,6 +175,7 @@ export default function ScoutLeadGenerator() {
         challenges: formData.challenges,
         campaigns: formData.campaigns,
         challenge_custom: formData.challengeCustom,
+        campaign_custom: formData.campaignCustom,
       },
     ])
 
@@ -344,20 +346,25 @@ export default function ScoutLeadGenerator() {
     </div>
 
     {/* Power meter */}
-    {formData.campaigns.length > 0 && (
+    {(formData.campaigns.length > 0 || formData.campaignCustom.trim()) && (
       <div className="max-w-md mx-auto mb-8">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-700">
             Campaign Power
           </span>
           <span className="text-sm text-blue-600">
-            {formData.campaigns.length}/9
+            {formData.campaigns.length + (formData.campaignCustom ? 1 : 0)}/9
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
-            className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full"
-            style={{ width: `${powerMeterWidth}%` }}
+            className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all"
+            style={{
+              width: `${Math.min(
+                ((formData.campaigns.length + (formData.campaignCustom ? 1 : 0)) / 9) * 100,
+                100
+              )}%`,
+            }}
           />
         </div>
       </div>
@@ -371,10 +378,10 @@ export default function ScoutLeadGenerator() {
         return (
           <Card
             key={campaign.id}
-            className={`cursor-pointer transition-all duration-300 ${
+            className={`cursor-pointer transition-all duration-300 rounded-xl ${
               isSelected
-                ? "border-blue-500 bg-blue-50 shadow-md"
-                : "hover:border-blue-300"
+                ? "border-2 border-blue-500 bg-blue-50 shadow-[0_0_15px_rgba(59,130,246,0.35)]"
+                : "border border-gray-200 hover:border-blue-300 hover:shadow-[0_0_12px_rgba(59,130,246,0.25)]"
             }`}
             onClick={() => handleCampaignToggle(campaign.id)}
           >
@@ -422,21 +429,25 @@ export default function ScoutLeadGenerator() {
         placeholder="Tell us about the specific campaign you'd like Scout to run for you..."
         value={formData.campaignCustom || ""}
         onChange={(e) =>
-          setFormData({ ...formData, campaignCustom: e.target.value })
+          setFormData((prev) => ({
+            ...prev,
+            campaignCustom: e.target.value,
+          }))
         }
-        className="h-28 resize-none"
+        className="!h-28 w-full resize-none"
       />
     </div>
 
-    {/* Continue button */}
-    <div className="mt-4">
+    {/* Continue button (always visible, disabled until valid) */}
+    <div className="mt-4 text-center">
       <Button
         onClick={() => updateStep(5)}
         disabled={
-          formData.campaigns.length === 0 && !formData.campaignCustom
+          formData.campaigns.length === 0 &&
+          !formData.campaignCustom?.trim()
         }
         size="lg"
-        className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
+        className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Generate My GTM Preview
         <Sparkles className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-2" />
@@ -444,7 +455,6 @@ export default function ScoutLeadGenerator() {
     </div>
   </div>
 )}
-
 
       {/* Step 5 */}
       {step === 5 && (
