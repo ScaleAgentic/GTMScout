@@ -161,6 +161,8 @@ export default function ScoutLeadGenerator() {
         : [...prev.campaigns, campaign],
     }))
   }
+  const totalCampaigns =
+  formData.campaigns.length + (formData.campaignCustom?.trim() ? 1 : 0)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -317,7 +319,7 @@ export default function ScoutLeadGenerator() {
           size="lg"
           disabled={
             formData.challenges.length === 0 &&
-            !formData.challengeCustom.trim()
+            !formData.challengeCustom?.trim()
           }
           className="group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -346,7 +348,7 @@ export default function ScoutLeadGenerator() {
     </div>
 
     {/* Power meter */}
-    {(formData.campaigns.length > 0 || formData.campaignCustom.trim()) && (
+    {(formData.campaigns.length > 0 || formData.campaignCustom?.trim()) && (
       <div className="max-w-md mx-auto mb-8">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-700">
@@ -509,7 +511,7 @@ export default function ScoutLeadGenerator() {
             </div>
             <div className="space-y-4">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                🎉 Scout is now tracking {formData.campaigns.length * 12} signals for you!
+                🎉 Scout is now tracking {totalCampaigns * 12} signals for you!
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto text-pretty">
                 Welcome to ScaleAgentic, {formData.firstName}! Your personalized GTM opportunities are being generated and will be in your inbox within 5 minutes.
