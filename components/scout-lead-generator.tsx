@@ -72,14 +72,14 @@ const challenges = [
 ]
 
 const campaigns = [
-  { id: "engagement" as Campaign, title: "Engagement Campaign", description: "Join live conversations on Reddit, LinkedIn, Slack", icon: Users },
   { id: "icp" as Campaign, title: "ICP Discovery", description: "Find your perfect customers using signal clusters", icon: Target },
   { id: "outreach" as Campaign, title: "Hyper-Personalized Outreach", description: "Turn cold lists into warm conversations", icon: Sparkles },
   { id: "account" as Campaign, title: "Account-Based Campaign", description: "Expand into strategic accounts with insights", icon: TrendingUp },
-  { id: "event" as Campaign, title: "Event & Launch", description: "Amplify your launches and announcements", icon: Zap },
+  { id: "engagement" as Campaign, title: "Engagement Campaign", description: "Join live conversations on Reddit, LinkedIn, Slack", icon: Users },
+  { id: "intelligence" as Campaign, title: "Market Intelligence", description: "Track competitors and sentiment shifts", icon: Eye },
   { id: "search" as Campaign, title: "AI Search Optimization", description: "Win in AI-native search (GEO/AEO)", icon: Search },
   { id: "content" as Campaign, title: "Content Campaign", description: "Generate and distribute thought leadership", icon: PenTool },
-  { id: "intelligence" as Campaign, title: "Market Intelligence", description: "Track competitors and sentiment shifts", icon: Eye },
+  { id: "event" as Campaign, title: "Event & Launch", description: "Amplify your launches and announcements", icon: Zap },
   { id: "custom" as Campaign, title: "Custom Motion", description: "Let Scout design your custom GTM motion", icon: Sparkles },
 ]
 
