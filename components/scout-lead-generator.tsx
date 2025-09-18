@@ -85,7 +85,7 @@ const campaigns = [
 function ProgressDots({ currentStep }: { currentStep: number }) {
   const steps = [1, 2, 3, 5, 6]
   return (
-    <div className="flex justify-center space-x-2 mt-6 mb-8">
+    <div className="flex justify-center space-x-2 mt-4 mb-8">
       {steps.map((s) => (
         <span
           key={s}
@@ -202,8 +202,8 @@ export default function ScoutLeadGenerator() {
             <Image
               src="/ScaleAgentic Logo (1).png"
               alt="ScaleAgentic Logo"
-              width={300}
-              height={60}
+              width={180}
+              height={40}
               priority
             />
           </Link>
@@ -211,7 +211,7 @@ export default function ScoutLeadGenerator() {
 
         {/* Step 1 */}
         {step === 1 && (
-          <div className="flex-1 max-w-5xl mx-auto px-6 pt-28 pb-20 text-center space-y-8">
+          <div className="flex-1 max-w-5xl mx-auto px-6 pt-16 pb-20 text-center space-y-8">
             <ProgressDots currentStep={1} />
 
             <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
